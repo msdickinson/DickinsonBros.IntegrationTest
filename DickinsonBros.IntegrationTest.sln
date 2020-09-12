@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DickinsonBros.IntegrationTest", "DickinsonBros.IntegrationTest\DickinsonBros.IntegrationTest.csproj", "{EE5864A8-9C95-45B5-BCA1-0CFDF39A2953}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 Library", "1 Library", "{74344465-5836-4C30-B665-D848CE36994F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DickinsonBros.IntegrationTest.Tests", "DickinsonBros.IntegrationTest.Tests\DickinsonBros.IntegrationTest.Tests.csproj", "{23C20F92-7729-4561-806B-7BC3D5DF1947}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 Runner", "2 Runner", "{25BFAAD3-8F1F-46E9-A626-309958DA16E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "9 Misc", "9 Misc", "{B9C36FC3-0C7A-47BD-B18E-554A51CC1DED}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\CreateNugetPackageCI.ps1 = Scripts\CreateNugetPackageCI.ps1
+		DickinsonBros.IntegrationTest.runsettings = DickinsonBros.IntegrationTest.runsettings
+		Scripts\Publish.yml = Scripts\Publish.yml
+		Scripts\Test.yml = Scripts\Test.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DickinsonBros.IntegrationTest.Runner", "DickinsonBros.IntegrationTest.Runner\DickinsonBros.IntegrationTest.Runner.csproj", "{250BA6F2-6026-41D2-9906-244A86C8B277}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE5864A8-9C95-45B5-BCA1-0CFDF39A2953}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE5864A8-9C95-45B5-BCA1-0CFDF39A2953}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE5864A8-9C95-45B5-BCA1-0CFDF39A2953}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE5864A8-9C95-45B5-BCA1-0CFDF39A2953}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23C20F92-7729-4561-806B-7BC3D5DF1947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23C20F92-7729-4561-806B-7BC3D5DF1947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23C20F92-7729-4561-806B-7BC3D5DF1947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23C20F92-7729-4561-806B-7BC3D5DF1947}.Release|Any CPU.Build.0 = Release|Any CPU
+		{250BA6F2-6026-41D2-9906-244A86C8B277}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{250BA6F2-6026-41D2-9906-244A86C8B277}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{250BA6F2-6026-41D2-9906-244A86C8B277}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{250BA6F2-6026-41D2-9906-244A86C8B277}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EE5864A8-9C95-45B5-BCA1-0CFDF39A2953} = {74344465-5836-4C30-B665-D848CE36994F}
+		{23C20F92-7729-4561-806B-7BC3D5DF1947} = {74344465-5836-4C30-B665-D848CE36994F}
+		{250BA6F2-6026-41D2-9906-244A86C8B277} = {25BFAAD3-8F1F-46E9-A626-309958DA16E6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {82BA460E-17EA-4C37-B8C4-EB8D4A332059}
+	EndGlobalSection
+EndGlobal
