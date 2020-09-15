@@ -17,9 +17,9 @@ namespace DickinsonBros.IntegrationTest.Models.TestAutomation
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public TimeSpan Duration { get; set; }
-        public Guid ExecutionId { get; set; }
-        public Guid TestId { get; set; }
-        public Guid TestType { get; set; }
+        public System.Guid ExecutionId { get; set; }
+        public System.Guid TestId { get; set; }
+        public System.Guid TestType { get; set; }
         public string ClassName { get; set; }
     }
 }

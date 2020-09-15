@@ -9,18 +9,29 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using DickinsonBros.IntegrationTest.Services;
+using DickinsonBros.Logger.Abstractions;
+using DickinsonBros.Guid.Abstractions;
 
 namespace DickinsonBros.IntegrationTest
 {
     public class IntegrationTestService : IIntegrationTestService
     {
+        internal readonly ICorrelationService _correlationService;
         internal readonly ITRXReportService _trxReportService;
+        internal readonly IGuidService _guidService;
         internal const string NULL_TEST_CLASS_ERROR_MESSAGE = "TestClass Is Null, Please ensure when calling SetupTests that the input has a value";
         internal const string SUCCESSLOG_PRAM_NAME = "successLog";
         internal const string CORRELATIONID_EXPECTED_PRAM_NAME = "correlationId";
-        public IntegrationTestService(ITRXReportService trxReportService)
+        public IntegrationTestService
+        (
+            ITRXReportService trxReportService,
+            ICorrelationService correlationService,
+            IGuidService guidService
+        )
         {
             _trxReportService = trxReportService;
+            _correlationService = correlationService;
+            _guidService = guidService;
         }    
         public IEnumerable<Test> SetupTests(object testClass)
         {
@@ -53,11 +64,9 @@ namespace DickinsonBros.IntegrationTest
                 .Where
                 (
                     methodInfo =>
-                    methodInfo.GetParameters().Length == 2 &&
+                    methodInfo.GetParameters().Length == 1 &&
                     methodInfo.GetParameters()[0].Name == SUCCESSLOG_PRAM_NAME &&
                     methodInfo.GetParameters()[0].ParameterType == typeof(List<string>) &&
-                    methodInfo.GetParameters()[1].Name == CORRELATIONID_EXPECTED_PRAM_NAME &&
-                    methodInfo.GetParameters()[1].ParameterType == typeof(string) &&
                     methodInfo.ReturnType == typeof(Task)
                 )
                 .ToList();
@@ -90,7 +99,7 @@ namespace DickinsonBros.IntegrationTest
 
         internal async Task<TestResult> Process<T>(T tests, Test test)
         {
-            var correlationId = Guid.NewGuid().ToString();
+            _correlationService.CorrelationId = _guidService.NewGuid().ToString();
             bool pass = false;
             Exception exception = null;
             var successLog = new List<string>();
@@ -101,7 +110,7 @@ namespace DickinsonBros.IntegrationTest
 
             try
             {
-                await (Task)test.MethodInfo.Invoke(tests, new Object[] { successLog, correlationId });
+                await (Task)test.MethodInfo.Invoke(tests, new Object[] { successLog });
                 pass = true;
             }
             catch (Exception ex)
@@ -119,16 +128,16 @@ namespace DickinsonBros.IntegrationTest
                 TestsName = test.TestsName != null ? test.TestsName : test.MethodInfo.ReflectedType.Name,
                 TestName = test.MethodInfo.Name,
                 TestGroup = test.TestGroup,
-                CorrelationId = correlationId,
+                CorrelationId = _correlationService.CorrelationId,
                 Pass = pass,
                 Duration = sw.Elapsed,
                 Exception = exception,
                 SuccessLog = successLog,
                 StartTime = startDateTime,
                 EndTime = endDateTime,
-                ExecutionId = Guid.NewGuid(),
-                TestId = Guid.NewGuid(),
-                TestType = Guid.NewGuid()
+                ExecutionId = _guidService.NewGuid(),
+                TestId = _guidService.NewGuid(),
+                TestType = _guidService.NewGuid()
 
             };
         }   

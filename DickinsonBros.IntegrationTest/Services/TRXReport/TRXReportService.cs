@@ -1,4 +1,5 @@
-﻿using DickinsonBros.IntegrationTest.Models;
+﻿using DickinsonBros.Guid.Abstractions;
+using DickinsonBros.IntegrationTest.Models;
 using DickinsonBros.IntegrationTest.Models.Report;
 using DickinsonBros.IntegrationTest.Models.TestAutomation;
 using System;
@@ -23,21 +24,30 @@ namespace DickinsonBros.IntegrationTest.Services
         public const string TEST_LIST_NAME_ALL_LOADED_TESTS = "All Loaded Results";
         public const string RESULT_OUTCOME = "Completed";
 
-        public string GenerateTRXReport(TestSummary testSummary)
+        internal readonly IGuidService _guidService;
+
+        public TRXReportService(IGuidService guidService)
         {
-            var runId = Guid.NewGuid().ToString();
-            var testSettingsGuid = Guid.NewGuid().ToString();
+            _guidService = guidService;
+        }
+        public string GenerateTRXReport
+        (
+            TestSummary testSummary
+        )
+        {
+            var runId = _guidService.NewGuid().ToString();
+            var testSettingsGuid = _guidService.NewGuid().ToString();
 
             var testLists = new TestList[]
             {
                 new TestList
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = _guidService.NewGuid().ToString(),
                     Name = TEST_LIST_NAME_RESULTS_NOT_IN_A_LIST
                 },
                 new TestList
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = _guidService.NewGuid().ToString(),
                     Name = TEST_LIST_NAME_ALL_LOADED_TESTS
                 }
             };

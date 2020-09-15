@@ -1,8 +1,10 @@
-﻿using DickinsonBros.IntegrationTest.Models.TestAutomation;
+﻿using DickinsonBros.Guid.Abstractions;
+using DickinsonBros.IntegrationTest.Models.TestAutomation;
 using DickinsonBros.IntegrationTest.Services;
 using DickinsonBros.Test;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -42,12 +44,12 @@ namespace DickinsonBros.IntegrationTest.Tests.Services
                                 StartTime = DateTime.Now,
                                 EndTime = DateTime.Now.AddMinutes(-1),
                                 Exception = null,
-                                ExecutionId = Guid.NewGuid(),
+                                ExecutionId = System.Guid.NewGuid(),
                                 Pass = true,
                                 SuccessLog = new List<string>{ "Part 1 Successful" },
-                                TestId = Guid.NewGuid(),
+                                TestId = System.Guid.NewGuid(),
                                 TestName = "SampleTestName",
-                                TestType = Guid.NewGuid()
+                                TestType = System.Guid.NewGuid()
                             },
                             new Models.TestAutomation.TestResult
                             {
@@ -57,12 +59,12 @@ namespace DickinsonBros.IntegrationTest.Tests.Services
                                 StartTime = DateTime.Now,
                                 EndTime = DateTime.Now.AddMinutes(-1),
                                 Exception = new Exception("SampleException"),
-                                ExecutionId = Guid.NewGuid(),
+                                ExecutionId = System.Guid.NewGuid(),
                                 Pass = false,
                                 SuccessLog = new List<string>{ "Part 1 Successful" },
-                                TestId = Guid.NewGuid(),
+                                TestId = System.Guid.NewGuid(),
                                 TestName = "SampleTestName",
-                                TestType = Guid.NewGuid()
+                                TestType = System.Guid.NewGuid()
                             }
 
                         }
@@ -96,7 +98,7 @@ namespace DickinsonBros.IntegrationTest.Tests.Services
         private IServiceCollection ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<ITRXReportService, TRXReportService>();
-
+            serviceCollection.AddSingleton(Mock.Of<IGuidService>());
             return serviceCollection;
         }
 

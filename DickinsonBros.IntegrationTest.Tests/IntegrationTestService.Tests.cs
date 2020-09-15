@@ -1,5 +1,7 @@
-﻿using DickinsonBros.IntegrationTest.Models.TestAutomation;
+﻿using DickinsonBros.Guid.Abstractions;
+using DickinsonBros.IntegrationTest.Models.TestAutomation;
 using DickinsonBros.IntegrationTest.Services;
+using DickinsonBros.Logger.Abstractions;
 using DickinsonBros.Test;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -203,11 +205,9 @@ namespace DickinsonBros.IntegrationTest.Tests
                                            .Where
                                            (
                                                 methodInfo =>
-                                                    methodInfo.GetParameters().Length == 2 &&
+                                                    methodInfo.GetParameters().Length == 1 &&
                                                     methodInfo.GetParameters()[0].Name == IntegrationTestService.SUCCESSLOG_PRAM_NAME &&
                                                     methodInfo.GetParameters()[0].ParameterType == typeof(List<string>) &&
-                                                    methodInfo.GetParameters()[1].Name == IntegrationTestService.CORRELATIONID_EXPECTED_PRAM_NAME &&
-                                                    methodInfo.GetParameters()[1].ParameterType == typeof(string) &&
                                                     methodInfo.ReturnType == typeof(Task)
                                            );
 
@@ -262,11 +262,9 @@ namespace DickinsonBros.IntegrationTest.Tests
                                            .Where
                                            (
                                                 methodInfo =>
-                                                    methodInfo.GetParameters().Length == 2 &&
+                                                    methodInfo.GetParameters().Length == 1 &&
                                                     methodInfo.GetParameters()[0].Name == IntegrationTestService.SUCCESSLOG_PRAM_NAME &&
                                                     methodInfo.GetParameters()[0].ParameterType == typeof(List<string>) &&
-                                                    methodInfo.GetParameters()[1].Name == IntegrationTestService.CORRELATIONID_EXPECTED_PRAM_NAME &&
-                                                    methodInfo.GetParameters()[1].ParameterType == typeof(string) &&
                                                     methodInfo.ReturnType == typeof(Task)
                                            );
                     var testAPIAttribute = (TestAPIAttribute)System.Attribute.GetCustomAttributes(exampleMixedClass.GetType()).FirstOrDefault(e => e is TestAPIAttribute);
@@ -482,12 +480,12 @@ namespace DickinsonBros.IntegrationTest.Tests
                                 StartTime = DateTime.Now,
                                 EndTime = DateTime.Now.AddMinutes(-1),
                                 Exception = null,
-                                ExecutionId = Guid.NewGuid(),
+                                ExecutionId = System.Guid.NewGuid(),
                                 Pass = true,
                                 SuccessLog = new List<string>{ "Part 1 Successful" },
-                                TestId = Guid.NewGuid(),
+                                TestId = System.Guid.NewGuid(),
                                 TestName = "SampleTestName1",
-                                TestType = Guid.NewGuid()
+                                TestType = System.Guid.NewGuid()
                             },
                             new Models.TestAutomation.TestResult
                             {
@@ -499,12 +497,12 @@ namespace DickinsonBros.IntegrationTest.Tests
                                 StartTime = DateTime.Now,
                                 EndTime = DateTime.Now.AddMinutes(-1),
                                 Exception = new Exception("SampleException"),
-                                ExecutionId = Guid.NewGuid(),
+                                ExecutionId = System.Guid.NewGuid(),
                                 Pass = false,
                                 SuccessLog = new List<string>{ "Part 1 Successful" },
-                                TestId = Guid.NewGuid(),
+                                TestId = System.Guid.NewGuid(),
                                 TestName = "SampleTestName2",
-                                TestType = Guid.NewGuid()
+                                TestType = System.Guid.NewGuid()
                             }
                         }
                     };
@@ -552,12 +550,12 @@ namespace DickinsonBros.IntegrationTest.Tests
                             StartTime = DateTime.Now,
                             EndTime = DateTime.Now.AddMinutes(-1),
                             Exception = null,
-                            ExecutionId = Guid.NewGuid(),
+                            ExecutionId = System.Guid.NewGuid(),
                             Pass = true,
                             SuccessLog = new List<string> { "Part 1 Successful" },
-                            TestId = Guid.NewGuid(),
+                            TestId = System.Guid.NewGuid(),
                             TestName = "SampleTestName1",
-                            TestType = Guid.NewGuid()
+                            TestType = System.Guid.NewGuid()
                         },
                         new Models.TestAutomation.TestResult
                         {
@@ -569,12 +567,12 @@ namespace DickinsonBros.IntegrationTest.Tests
                             StartTime = DateTime.Now,
                             EndTime = DateTime.Now.AddMinutes(-1),
                             Exception = null,
-                            ExecutionId = Guid.NewGuid(),
+                            ExecutionId = System.Guid.NewGuid(),
                             Pass = true,
                             SuccessLog = new List<string> { },
-                            TestId = Guid.NewGuid(),
+                            TestId = System.Guid.NewGuid(),
                             TestName = "SampleTestName2",
-                            TestType = Guid.NewGuid()
+                            TestType = System.Guid.NewGuid()
                         },
                         new Models.TestAutomation.TestResult
                         {
@@ -586,12 +584,12 @@ namespace DickinsonBros.IntegrationTest.Tests
                             StartTime = DateTime.Now,
                             EndTime = DateTime.Now.AddMinutes(-1),
                             Exception = new Exception("SampleException"),
-                            ExecutionId = Guid.NewGuid(),
+                            ExecutionId = System.Guid.NewGuid(),
                             Pass = false,
                             SuccessLog = new List<string> { "Part 1 Successful" },
-                            TestId = Guid.NewGuid(),
+                            TestId = System.Guid.NewGuid(),
                             TestName = "SampleTestName3",
-                            TestType = Guid.NewGuid()
+                            TestType = System.Guid.NewGuid()
                         },
                         new Models.TestAutomation.TestResult
                         {
@@ -603,12 +601,12 @@ namespace DickinsonBros.IntegrationTest.Tests
                             StartTime = DateTime.Now,
                             EndTime = DateTime.Now.AddMinutes(-1),
                             Exception = new Exception("SampleException"),
-                            ExecutionId = Guid.NewGuid(),
+                            ExecutionId = System.Guid.NewGuid(),
                             Pass = false,
                             SuccessLog = new List<string> { },
-                            TestId = Guid.NewGuid(),
+                            TestId = System.Guid.NewGuid(),
                             TestName = "SampleTestName4",
-                            TestType = Guid.NewGuid()
+                            TestType = System.Guid.NewGuid()
                         }
 
                     }
@@ -690,23 +688,24 @@ namespace DickinsonBros.IntegrationTest.Tests
         {
             serviceCollection.AddSingleton<IIntegrationTestService, IntegrationTestService>();
             serviceCollection.AddSingleton(Mock.Of<ITRXReportService>());
-
+            serviceCollection.AddSingleton(Mock.Of<IGuidService>());
+            serviceCollection.AddSingleton(Mock.Of<ICorrelationService>());
             return serviceCollection;
         }
 
         public interface IExampleTestClass
         {
-            Task Example_MethodOne_Async(List<string> successLog, string corrlectionId);
-            Task Example_MethodTwo_Async(List<string> successLog, string corrlectionId);
+            Task Example_MethodOne_Async(List<string> successLog);
+            Task Example_MethodTwo_Async(List<string> successLog);
         }
         public class ExampleTestClass : IExampleTestClass
         {
-            public async Task Example_MethodOne_Async(List<string> successLog, string correlationId)
+            public async Task Example_MethodOne_Async(List<string> successLog)
             {
                 successLog.Add("Step 1 Successful");
                 await Task.CompletedTask.ConfigureAwait(false);
             }
-            public async Task Example_MethodTwo_Async(List<string> successLog, string correlationId)
+            public async Task Example_MethodTwo_Async(List<string> successLog)
             {
                 successLog.Add("Step 1 Successful");
                 await Task.CompletedTask.ConfigureAwait(false);
@@ -721,20 +720,20 @@ namespace DickinsonBros.IntegrationTest.Tests
             internal async Task MethodOne_NotMatch() { await Task.CompletedTask.ConfigureAwait(false); }
             private async Task MethodTwo_NotMatch() { await Task.CompletedTask.ConfigureAwait(false); }
             public void MethodThree_NotMatch() { }
-            public void MethodFour_NotMatch(List<string> successLog, string correlationId) { }
-            public async Task MethodFive_Match(List<string> successLog, string correlationId) { await Task.CompletedTask.ConfigureAwait(false); }
+            public void MethodFour_NotMatch(List<string> successLog) { }
+            public async Task MethodFive_Match(List<string> successLog) { await Task.CompletedTask.ConfigureAwait(false); }
 
-            public async Task MethodSix_Matchs(List<string> successLog, string correlationId)
+            public async Task MethodSix_Matchs(List<string> successLog)
             {
                 await Task.CompletedTask.ConfigureAwait(false);
             }
 
-            async Task InterfaceTwo.MethodSeven_Matchs(List<string> successLog, string correlationId)
+            async Task InterfaceTwo.MethodSeven_Matchs(List<string> successLog)
             {
                 await Task.CompletedTask.ConfigureAwait(false);
             }
 
-            async Task InterfaceThree.MethodEight_Matchs(List<string> successLog, string correlationId)
+            async Task InterfaceThree.MethodEight_Matchs(List<string> successLog)
             {
                 await Task.CompletedTask.ConfigureAwait(false);
             }
@@ -742,16 +741,16 @@ namespace DickinsonBros.IntegrationTest.Tests
 
         public interface InterfaceOne
         {
-            Task MethodSix_Matchs(List<string> successLog, string correlationId);
+            Task MethodSix_Matchs(List<string> successLog);
         }
 
         public interface InterfaceTwo : InterfaceThree
         {
-            Task MethodSeven_Matchs(List<string> successLog, string correlationId);
+            Task MethodSeven_Matchs(List<string> successLog);
         }
         public interface InterfaceThree
         {
-            Task MethodEight_Matchs(List<string> successLog, string correlationId);
+            Task MethodEight_Matchs(List<string> successLog);
         }
         #endregion
 

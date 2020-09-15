@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using DickinsonBros.IntegrationTest.Runner.Services;
 using DickinsonBros.IntegrationTest.Extensions;
+using DickinsonBros.Logger.Extensions;
+using DickinsonBros.Guid.Extensions;
 
 namespace DickinsonBros.IntegrationTest.Runner
 {
@@ -87,6 +89,12 @@ namespace DickinsonBros.IntegrationTest.Runner
 
             //Add IntegrationTest Service
             services.AddIntegrationTestService();
+
+            //Add Logging Service
+            services.AddLoggingService();
+
+            //Add Guid Service
+            services.AddGuidService();
         }
 
         IServiceCollection InitializeDependencyInjection()
