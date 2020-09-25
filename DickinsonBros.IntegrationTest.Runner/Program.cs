@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using DickinsonBros.IntegrationTest.Runner.Services;
 using DickinsonBros.IntegrationTest.Extensions;
 using DickinsonBros.Logger.Extensions;
 using DickinsonBros.Guid.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace DickinsonBros.IntegrationTest.Runner
 {
@@ -24,13 +23,13 @@ namespace DickinsonBros.IntegrationTest.Runner
         {
             try
             {
-                using var applicationLifetime = new ApplicationLifetime();
                 var services = InitializeDependencyInjection();
-                ConfigureServices(services, applicationLifetime);
+                ConfigureServices(services);
 
                 using (var provider = services.BuildServiceProvider())
                 {
                     var integrationTestService = provider.GetRequiredService<IIntegrationTestService>();
+                    var hostApplicationLifetime = provider.GetService<IHostApplicationLifetime>();
 
                     var exampleTestClass = new ExampleTestClass();
                     
@@ -58,8 +57,9 @@ namespace DickinsonBros.IntegrationTest.Runner
 
                     Console.WriteLine($"Zip Generated: {zip != null}");
                     Console.WriteLine();
+
+                    hostApplicationLifetime.StopApplication();
                 }
-                applicationLifetime.StopApplication();
                 await Task.CompletedTask.ConfigureAwait(false);
             }
             catch (Exception e)
@@ -73,7 +73,7 @@ namespace DickinsonBros.IntegrationTest.Runner
             }
         }
 
-        private void ConfigureServices(IServiceCollection services, ApplicationLifetime applicationLifetime)
+        private void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
             services.AddLogging(config =>
@@ -85,16 +85,12 @@ namespace DickinsonBros.IntegrationTest.Runner
                     config.AddConsole();
                 }
             });
-            services.AddSingleton<IApplicationLifetime>(applicationLifetime);
+            services.AddSingleton<IHostApplicationLifetime, HostApplicationLifetime>();
 
-            //Add IntegrationTest Service
-            services.AddIntegrationTestService();
-
-            //Add Logging Service
-            services.AddLoggingService();
-
-            //Add Guid Service
+            //Stack
             services.AddGuidService();
+            services.AddLoggingService();
+            services.AddIntegrationTestService();
         }
 
         IServiceCollection InitializeDependencyInjection()
