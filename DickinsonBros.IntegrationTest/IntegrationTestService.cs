@@ -1,4 +1,8 @@
-﻿using DickinsonBros.IntegrationTest.Models.TestAutomation;
+﻿using DickinsonBros.Guid.Abstractions;
+using DickinsonBros.IntegrationTest.Models.TestAutomation;
+using DickinsonBros.IntegrationTest.Services;
+using DickinsonBros.IntegrationTest.Services.IntegreationTestDB;
+using DickinsonBros.Logger.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,9 +12,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using DickinsonBros.IntegrationTest.Services;
-using DickinsonBros.Logger.Abstractions;
-using DickinsonBros.Guid.Abstractions;
 
 namespace DickinsonBros.IntegrationTest
 {
@@ -19,6 +20,7 @@ namespace DickinsonBros.IntegrationTest
         internal readonly ICorrelationService _correlationService;
         internal readonly ITRXReportService _trxReportService;
         internal readonly IGuidService _guidService;
+        internal readonly IIntegreationTestDBService _integreationTestDBService;
         internal const string NULL_TEST_CLASS_ERROR_MESSAGE = "TestClass Is Null, Please ensure when calling SetupTests that the input has a value";
         internal const string SUCCESSLOG_PRAM_NAME = "successLog";
         internal const string CORRELATIONID_EXPECTED_PRAM_NAME = "correlationId";
@@ -26,12 +28,14 @@ namespace DickinsonBros.IntegrationTest
         (
             ITRXReportService trxReportService,
             ICorrelationService correlationService,
-            IGuidService guidService
+            IGuidService guidService,
+            IIntegreationTestDBService integreationTestDBService
         )
         {
             _trxReportService = trxReportService;
             _correlationService = correlationService;
             _guidService = guidService;
+            _integreationTestDBService = integreationTestDBService;
         }    
         public IEnumerable<Test> SetupTests(object testClass)
         {
@@ -83,7 +87,7 @@ namespace DickinsonBros.IntegrationTest
         public async Task<TestSummary> RunTests(IEnumerable<Test> tests)
         {
             var testSummary = new TestSummary();
-            var tasks = new List<Task<TestResult>>();
+            var tasks = new List<Task<Models.TestAutomation.TestResult>>();
 
             foreach (var test in tests)
             {
@@ -93,11 +97,11 @@ namespace DickinsonBros.IntegrationTest
             testSummary.StartDateTime = DateTime.UtcNow;
             testSummary.TestResults = (await Task.WhenAll(tasks)).ToList();
             testSummary.EndDateTime = DateTime.UtcNow;
-
+            testSummary.Id = _guidService.NewGuid().ToString();
             return testSummary;
         }
 
-        internal async Task<TestResult> Process<T>(T tests, Test test)
+        internal async Task<Models.TestAutomation.TestResult> Process<T>(T tests, Test test)
         {
             _correlationService.CorrelationId = _guidService.NewGuid().ToString();
             bool pass = false;
@@ -122,7 +126,7 @@ namespace DickinsonBros.IntegrationTest
                 sw.Stop();
             }
             DateTime endDateTime = DateTime.Now;
-            return new TestResult
+            return new Models.TestAutomation.TestResult
             {
                 ClassName = test.MethodInfo.ReflectedType.Name,
                 TestsName = test.TestsName != null ? test.TestsName : test.MethodInfo.ReflectedType.Name,
@@ -212,6 +216,22 @@ namespace DickinsonBros.IntegrationTest
         public string GenerateTRXReport(TestSummary testSummary)
         {
             return _trxReportService.GenerateTRXReport(testSummary);
+        }
+
+        public async Task SaveResultsToDatabase(TestSummary testSummary)
+        {
+            var dbResults = testSummary.TestResults.Select(testResult => new Models.Db.TestResult
+            {
+                CorrelationId = testResult.CorrelationId,
+                DateTime = testResult.StartTime,
+                Duration = testResult.Duration,
+                TestRunId = testSummary.Id,
+                Pass = testResult.Pass,
+                TestGroup = testResult.TestGroup,
+                TestName = testResult.TestName
+            });
+
+            await _integreationTestDBService.InsertAsync(dbResults).ConfigureAwait(false);
         }
     }
 
