@@ -12,7 +12,7 @@
       A Integration Tests Service
 
       Features
-      * SetupTests, RunTests, GenerateLog, GenerateTRXReport, and GenerateZip
+      * SetupTests, RunTests, GenerateLog, GenerateTRXReport, GenerateZip and SaveResultsToDatabase
       * A simple method runner using reflection
     </Description>
     <LangVersion>8.0</LangVersion>
