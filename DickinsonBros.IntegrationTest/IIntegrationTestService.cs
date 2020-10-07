@@ -12,5 +12,6 @@ namespace DickinsonBros.IntegrationTest
         string GenerateLog(TestSummary testSummary, bool showSuccessLogsOnSuccess);
         string GenerateTRXReport(TestSummary testSummary);
         Task<MemoryStream> GenerateZip(string report, string log);
+        Task SaveResultsToDatabase(TestSummary testSummary);
     }
 }

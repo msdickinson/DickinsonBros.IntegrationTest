@@ -2,7 +2,6 @@
 using DickinsonBros.IntegrationTest.Models;
 using DickinsonBros.IntegrationTest.Models.Report;
 using DickinsonBros.IntegrationTest.Models.TestAutomation;
-using System;
 using System.Linq;
 using System.Xml.Serialization;
 

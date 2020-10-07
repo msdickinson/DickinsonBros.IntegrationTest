@@ -11,7 +11,7 @@ namespace DickinsonBros.IntegrationTest.Models.TestAutomation
         public DateTime EndDateTime { get; set; }
         public TimeSpan Duration { get; set; }
         public IEnumerable<TestResult> TestResults { get; set; }
+        public string Id { get; set; }
 
-  
     }
 }

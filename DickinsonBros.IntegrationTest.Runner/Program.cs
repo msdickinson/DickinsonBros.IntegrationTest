@@ -9,6 +9,13 @@ using DickinsonBros.IntegrationTest.Extensions;
 using DickinsonBros.Logger.Extensions;
 using DickinsonBros.Guid.Extensions;
 using Microsoft.Extensions.Hosting;
+using DickinsonBros.Encryption.Certificate.Extensions;
+using DickinsonBros.SQL.Extensions;
+using DickinsonBros.Redactor.Extensions;
+using DickinsonBros.Telemetry.Extensions;
+using DickinsonBros.DateTime.Extensions;
+using DickinsonBros.DataTable.Extensions;
+using DickinsonBros.Stopwatch.Extensions;
 
 namespace DickinsonBros.IntegrationTest.Runner
 {
@@ -42,6 +49,10 @@ namespace DickinsonBros.IntegrationTest.Runner
                     //Process Test Summary
                     var trxReport = integrationTestService.GenerateTRXReport(testSummary);
                     var log = integrationTestService.GenerateLog(testSummary, true);
+
+                    //Save Results
+
+                    await integrationTestService.SaveResultsToDatabase(testSummary).ConfigureAwait(false);
 
                     //Package Results
                     var zip = integrationTestService.GenerateZip(trxReport, log);
@@ -89,8 +100,15 @@ namespace DickinsonBros.IntegrationTest.Runner
 
             //Stack
             services.AddGuidService();
+            services.AddStopwatchService();
+            services.AddDateTimeService();
             services.AddLoggingService();
+            services.AddDataTableService();
+            services.AddRedactorService();
+            services.AddSQLService();
+            services.AddTelemetryService();
             services.AddIntegrationTestService();
+            services.AddConfigurationEncryptionService();
         }
 
         IServiceCollection InitializeDependencyInjection()

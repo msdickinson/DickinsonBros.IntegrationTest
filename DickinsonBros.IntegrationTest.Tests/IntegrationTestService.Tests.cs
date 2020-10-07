@@ -1,6 +1,7 @@
 ﻿using DickinsonBros.Guid.Abstractions;
 using DickinsonBros.IntegrationTest.Models.TestAutomation;
 using DickinsonBros.IntegrationTest.Services;
+using DickinsonBros.IntegrationTest.Services.IntegreationTestDB;
 using DickinsonBros.Logger.Abstractions;
 using DickinsonBros.Test;
 using Microsoft.Extensions.DependencyInjection;
@@ -682,6 +683,123 @@ namespace DickinsonBros.IntegrationTest.Tests
 
         #endregion
 
+        #region SaveResultsToDatabase
+
+        [TestMethod]
+        public async Task SaveResultsToDatabase_Runs_InsertAsyncCalled()
+        {
+            await RunDependencyInjectedTestAsync
+            (
+                async (serviceProvider) =>
+                {
+                    // Arrange
+                    var testSummary = new TestSummary
+                    {
+                        Duration = TimeSpan.FromMinutes(1),
+                        StartDateTime = DateTime.Now.AddMinutes(-1),
+                        EndDateTime = DateTime.Now,
+                        TestResults = new List<Models.TestAutomation.TestResult>
+                    {
+                        new Models.TestAutomation.TestResult
+                        {
+                            TestGroup = "SampleTestGroup",
+                            TestsName = "SampleTestsName",
+                            ClassName = "SampleClassname",
+                            CorrelationId = "SampleCorrelationId",
+                            Duration = TimeSpan.FromMinutes(1),
+                            StartTime = DateTime.Now,
+                            EndTime = DateTime.Now.AddMinutes(-1),
+                            Exception = null,
+                            ExecutionId = System.Guid.NewGuid(),
+                            Pass = true,
+                            SuccessLog = new List<string> { "Part 1 Successful" },
+                            TestId = System.Guid.NewGuid(),
+                            TestName = "SampleTestName1",
+                            TestType = System.Guid.NewGuid()
+                        },
+                        new Models.TestAutomation.TestResult
+                        {
+                            TestGroup = "SampleTestGroup",
+                            TestsName = "SampleTestsName",
+                            ClassName = "SampleClassname",
+                            CorrelationId = "SampleCorrelationId",
+                            Duration = TimeSpan.FromMinutes(1),
+                            StartTime = DateTime.Now,
+                            EndTime = DateTime.Now.AddMinutes(-1),
+                            Exception = null,
+                            ExecutionId = System.Guid.NewGuid(),
+                            Pass = true,
+                            SuccessLog = new List<string> { },
+                            TestId = System.Guid.NewGuid(),
+                            TestName = "SampleTestName2",
+                            TestType = System.Guid.NewGuid()
+                        }
+                    }
+                    };
+
+                    //--IIntegreationTestDBService 
+                    var integreationTestDBServiceMock = serviceProvider.GetMock<IIntegreationTestDBService>();
+
+                    var observedTestResults = (IEnumerable<Models.Db.TestResult>)null;
+                    integreationTestDBServiceMock
+                    .Setup
+                    (
+                        integreationTestDBService => integreationTestDBService.InsertAsync
+                        (
+                            It.IsAny<IEnumerable<Models.Db.TestResult>>()
+                        )
+                    )
+                    .Callback<IEnumerable<Models.Db.TestResult>>((results) =>
+                    {
+                        observedTestResults = results;
+                    });
+
+                    var uut = serviceProvider.GetRequiredService<IIntegrationTestService>();
+                    var uutConcrete = (IntegrationTestService)uut;
+
+                    // Act
+
+                    await uutConcrete.SaveResultsToDatabase(testSummary).ConfigureAwait(false);
+
+                    // Assert
+                    integreationTestDBServiceMock
+                    .Verify
+                    (
+                        integreationTestDBService => integreationTestDBService.InsertAsync
+                        (
+                            observedTestResults
+                        ),
+                        Times.Once
+                    );
+
+                    Assert.AreEqual(testSummary.TestResults.Count(), observedTestResults.Count());
+
+                    //Verfiy First Item
+                    Assert.AreEqual(testSummary.TestResults.First().CorrelationId       , observedTestResults.First().CorrelationId);
+                    Assert.AreEqual(testSummary.TestResults.First().StartTime           , observedTestResults.First().DateTime);
+                    Assert.AreEqual(testSummary.TestResults.First().Duration            , observedTestResults.First().Duration);
+                    Assert.AreEqual(testSummary.TestResults.First().Pass                , observedTestResults.First().Pass);
+                    Assert.AreEqual(testSummary.TestResults.First().TestGroup           , observedTestResults.First().TestGroup);
+                    Assert.AreEqual(testSummary.TestResults.First().TestName            , observedTestResults.First().TestName);
+                    Assert.AreEqual(testSummary.Id                                      , observedTestResults.First().TestRunId);
+
+                    //Verfiy Last Item
+                    Assert.AreEqual(testSummary.TestResults.Last().CorrelationId       , observedTestResults.Last().CorrelationId);
+                    Assert.AreEqual(testSummary.TestResults.Last().StartTime           , observedTestResults.Last().DateTime);
+                    Assert.AreEqual(testSummary.TestResults.Last().Duration            , observedTestResults.Last().Duration);
+                    Assert.AreEqual(testSummary.TestResults.Last().Pass                , observedTestResults.Last().Pass);
+                    Assert.AreEqual(testSummary.TestResults.Last().TestGroup           , observedTestResults.Last().TestGroup);
+                    Assert.AreEqual(testSummary.TestResults.Last().TestName            , observedTestResults.Last().TestName);
+                    Assert.AreEqual(testSummary.Id                                     , observedTestResults.Last().TestRunId);
+
+                    await Task.CompletedTask.ConfigureAwait(false);
+                },
+                serviceCollection => ConfigureServices(serviceCollection)
+            );
+        }
+
+        #endregion
+
         #region Helpers
 
         private IServiceCollection ConfigureServices(IServiceCollection serviceCollection)
@@ -690,6 +808,7 @@ namespace DickinsonBros.IntegrationTest.Tests
             serviceCollection.AddSingleton(Mock.Of<ITRXReportService>());
             serviceCollection.AddSingleton(Mock.Of<IGuidService>());
             serviceCollection.AddSingleton(Mock.Of<ICorrelationService>());
+            serviceCollection.AddSingleton(Mock.Of<IIntegreationTestDBService>());
             return serviceCollection;
         }
 

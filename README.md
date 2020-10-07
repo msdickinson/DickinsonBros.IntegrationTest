@@ -7,7 +7,7 @@
 A IntegrationTest service
 
 Features
-* SetupTests, RunTests, GenerateLog, GenerateTRXReport, and GenerateZip
+* SetupTests, RunTests, GenerateLog, GenerateTRXReport, GenerateZip and SaveResultsToDatabase
 * A simple method runner using reflection
 
 <a href="https://dev.azure.com/marksamdickinson/DickinsonBros/_build?definitionScope=%5CDickinsonBros.IntegrationTest">Builds</a>

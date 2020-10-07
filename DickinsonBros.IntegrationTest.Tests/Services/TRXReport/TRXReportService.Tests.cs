@@ -7,13 +7,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
 namespace DickinsonBros.IntegrationTest.Tests.Services
 {
-
     [TestClass]
     public class TRXReportServiceTests : BaseTest
     {
