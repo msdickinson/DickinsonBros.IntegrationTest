@@ -90,4 +90,7 @@ TRX Report:
 Zip Generated: True
 ```
 
+<b>Test Results</b>
+![Alt text](https://raw.githubusercontent.com/msdickinson/DickinsonBros.IntegrationTest/master/TestResults.PNG)
+
 [Sample Runner](https://github.com/msdickinson/DickinsonBros.IntegrationTest/tree/master/DickinsonBros.IntegrationTest.Runner)
